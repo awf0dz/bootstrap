@@ -162,6 +162,42 @@ module.exports = function (grunt) {
       }
     },
 
+    htmlmin: {
+      dist: {
+        options: {
+          collapseBooleanAttributes: true,
+          collapseWhitespace: true,
+          conservativeCollapse: true,
+          decodeEntities: true,
+          minifyCSS: {
+            compatibility: 'ie9',
+            keepSpecialComments: 0,
+            noAdvanced: true
+          },
+          minifyJS: true,
+          minifyURLs: false,
+          processConditionalComments: true,
+          removeAttributeQuotes: true,
+          removeComments: true,
+          removeOptionalAttributes: true,
+          removeOptionalTags: true,
+          removeRedundantAttributes: true,
+          removeScriptTypeAttributes: true,
+          removeStyleLinkTypeAttributes: true,
+          removeTagWhitespace: false,
+          sortAttributes: true,
+          sortClassName: true
+        },
+        expand: true,
+        cwd: '_gh_pages',
+        dest: '_gh_pages',
+        src: [
+          '**/*.html',
+          '!examples/**/*.html'
+        ]
+      }
+    },
+
     htmllint: {
       options: {
         ignore: [
@@ -342,12 +378,17 @@ module.exports = function (grunt) {
   grunt.registerTask('default', ['clean:dist', 'test'])
 
   // Docs task.
+  grunt.registerTask('docs-css', ['cssmin:docs', 'exec:postcss-docs']);
+  grunt.registerTask('lint-docs-css', ['scsslint:docs']);
+  grunt.registerTask('docs-js', ['uglify:docsJs']);
+  grunt.registerTask('docs', ['lint-docs-css', 'docs-css', 'docs-js', 'clean:docs', 'copy:docs']);
+  grunt.registerTask('docs-github', ['jekyll:github', 'htmlmin']);
   grunt.registerTask('docs-css', ['exec:clean-css-docs', 'exec:postcss-docs'])
   grunt.registerTask('lint-docs-css', ['exec:scss-lint-docs'])
   grunt.registerTask('docs-js', ['exec:uglify-docs'])
   grunt.registerTask('docs', ['lint-docs-css', 'docs-css', 'docs-js', 'clean:docs', 'copy:docs'])
   grunt.registerTask('docs-github', ['jekyll:github'])
-
+  
   grunt.registerTask('prep-release', ['dist', 'docs', 'docs-github', 'compress'])
 
   // Publish to GitHub
